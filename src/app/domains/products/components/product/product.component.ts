@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, input, Input, Output } from '@angular/core';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { RouterLinkWithHref } from '@angular/router';
 import { Product } from '@shared/models/product.model';
 import { ReversePipe } from '@shared/pipes/reverse.pipe';
@@ -7,11 +7,13 @@ import { TimeAgoPipe } from '@shared/pipes/time-ago.pipe';
 
 @Component({
     selector: 'app-product',
-    imports: [CommonModule, ReversePipe, TimeAgoPipe, RouterLinkWithHref],
+    imports: [CommonModule, ReversePipe, TimeAgoPipe, RouterLinkWithHref, NgOptimizedImage],
     templateUrl: './product.component.html',
 })
 export class ProductComponent {
   @Input({required: true}) product!: Product;
+
+  isPriority = input<boolean>(false);
 
   @Output() addToCart = new EventEmitter();
 
