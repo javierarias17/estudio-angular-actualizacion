@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, AfterViewInit, OnDestroy, input, effect, computed } from '@angular/core';
+import { Component, signal, OnInit, AfterViewInit, OnDestroy, input, effect, computed, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 export class CounterComponent implements OnInit, AfterViewInit, OnDestroy {
 
   duration = input.required<number>();
-  message = input.required<string>();
+  message = model.required<string>();
   counter = signal(0);
   counterRef: number | undefined;
 
@@ -78,6 +78,10 @@ export class CounterComponent implements OnInit, AfterViewInit, OnDestroy {
   doSomethingTwo() {
     console.log('change message')
     // async
+  }
+
+  setMessage(){
+    this.message.set(Math.random().toString());
   }
 
 }
