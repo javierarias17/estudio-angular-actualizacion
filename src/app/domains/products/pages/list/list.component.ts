@@ -2,7 +2,6 @@ import {
   Component,
   inject,
   signal,
-  OnInit,
   OnChanges,
   input
 } from '@angular/core';
@@ -14,7 +13,7 @@ import { Product } from '@shared/models/product.model';
 import { CartService } from '@shared/services/cart.service';
 import { ProductService } from '@shared/services/product.service';
 import { CategoryService } from '@shared/services/category.service';
-import { Category } from '@shared/models/category.model';
+import {rxResource} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-list',
@@ -26,17 +25,30 @@ import { Category } from '@shared/models/category.model';
   ],
   templateUrl: './list.component.html',
 })
-export default class ListComponent implements OnInit, OnChanges {
-  products = signal<Product[]>([]);
-  categories = signal<Category[]>([]);
+export default class ListComponent implements  OnChanges {
   private cartService = inject(CartService);
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   readonly slug = input<string>();
 
-  ngOnInit() {
-    this.getCategories();
-  }
+  products = signal<Product[]>([]);
+
+  /**
+   * rxResource: permite condensar multisples estados relacionados (como loading, error y data) 
+   * en un solo recurso
+   * 
+   *   categoriesResource.value: contiene los datos obtenidos
+   *   categoriesResource.loading: indica si la operación está en curso
+   *   categoriesResource.error: contiene información sobre errores
+   *   categoriesResource.status: indica el estado actual del recurso
+   *   categoriesResource.set(): para actualizar manualmente los datos
+   *   categoriesResource.reload(): para volver a ejecutar la operación asíncrona
+   *   categoriesResource.reset(): para restablecer el recurso a su estado inicial
+   * 
+   */
+  categoriesResources = rxResource({
+    loader: () => this.categoryService.getAll(),
+  });
 
   ngOnChanges() {
     this.getProducts();
@@ -54,11 +66,11 @@ export default class ListComponent implements OnInit, OnChanges {
     });
   }
 
-  private getCategories() {
-    this.categoryService.getAll().subscribe({
-      next: (data) => {
-        this.categories.set(data);
-      },
-    });
+  resetCategories(){
+    this.categoriesResources.set([]);
+  }
+
+  reloadCategories(){
+    this.categoriesResources.reload();
   }
 }
